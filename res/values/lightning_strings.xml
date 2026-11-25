@@ -123,6 +123,19 @@
     <string name="drawer_search_title">App search bar</string>
     <string name="drawer_search_summary">Search bar on top of the app drawer</string>
 
+    <!-- Drawer top row -->
+    <string name="drawer_top_row_title">Top row shows</string>
+    <string name="drawer_top_row_suggestions">App suggestions</string>
+    <string name="drawer_top_row_pinned">Pinned apps</string>
+    <string-array name="drawer_top_row_entries">
+        <item>@string/drawer_top_row_suggestions</item>
+        <item>@string/drawer_top_row_pinned</item>
+    </string-array>
+    <string-array name="drawer_top_row_values">
+        <item>suggestions</item>
+        <item>pinned</item>
+    </string-array>
+
     <!-- Drawer blur -->
     <string name="drawer_blur_title">Background blur</string>
     <string name="drawer_blur_summary">Blur the wallpaper behind the drawer, folders and menus</string>

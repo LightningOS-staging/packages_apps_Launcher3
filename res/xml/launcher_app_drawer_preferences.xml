@@ -24,6 +24,15 @@
         android:defaultValue="true"
         launcher:iconSpaceReserved="false" />
 
+    <ListPreference
+        android:key="pref_drawer_top_row"
+        android:title="@string/drawer_top_row_title"
+        android:entries="@array/drawer_top_row_entries"
+        android:entryValues="@array/drawer_top_row_values"
+        android:defaultValue="suggestions"
+        android:summary="%s"
+        launcher:iconSpaceReserved="false" />
+
     <SwitchPreferenceCompat
         android:key="pref_drawer_blur"
         android:title="@string/drawer_blur_title"
