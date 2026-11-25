@@ -136,6 +136,10 @@
         <item>pinned</item>
     </string-array>
 
+    <string name="pin_to_drawer">Pin to drawer</string>
+    <string name="unpin_from_drawer">Unpin from drawer</string>
+    <string name="pin_to_drawer_full">Only %1$d apps fit in the drawer top row</string>
+
     <!-- Drawer blur -->
     <string name="drawer_blur_title">Background blur</string>
     <string name="drawer_blur_summary">Blur the wallpaper behind the drawer, folders and menus</string>

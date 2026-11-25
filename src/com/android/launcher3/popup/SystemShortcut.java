@@ -57,6 +57,7 @@ import com.android.launcher3.logging.StatsLogManager;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.ItemInfoWithIcon;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
+import com.android.launcher3.pinned.PinnedAppsStore;
 import com.android.launcher3.pm.UserCache;
 import com.android.launcher3.testing.shared.ResourceUtils;
 import com.android.launcher3.util.ActivityOptionsWrapper;
@@ -791,4 +792,47 @@ public abstract class SystemShortcut<T extends ActivityContext> extends ItemInfo
                 // Don't show the shortcut for items without an icon or that don't support App Lock.
                 return null;
             };
+    public static final Factory<ActivityContext> PIN_TO_DRAWER =
+            (activity, itemInfo, originalView) -> {
+                if (!PinnedAppsStore.isPinnedMode(originalView.getContext())
+                        || itemInfo.getTargetComponent() == null
+                        || !(itemInfo.isInAllApps()
+                        || itemInfo.container == Favorites.CONTAINER_ALL_APPS_PREDICTION)) {
+                    return null;
+                }
+                return new PinToDrawer<>(activity, itemInfo, originalView);
+            };
+
+    private static class PinToDrawer<T extends ActivityContext> extends SystemShortcut<T> {
+        private final ComponentKey mKey;
+        private final boolean mPinned;
+
+        PinToDrawer(T target, ItemInfo itemInfo, View originalView) {
+            super(PinnedAppsStore.isPinned(originalView.getContext(),
+                            new ComponentKey(itemInfo.getTargetComponent(), itemInfo.user))
+                            ? R.drawable.ic_unpin : R.drawable.ic_pin,
+                    PinnedAppsStore.isPinned(originalView.getContext(),
+                            new ComponentKey(itemInfo.getTargetComponent(), itemInfo.user))
+                            ? R.string.unpin_from_drawer : R.string.pin_to_drawer,
+                    target, itemInfo, originalView);
+            mKey = new ComponentKey(itemInfo.getTargetComponent(), itemInfo.user);
+            mPinned = PinnedAppsStore.isPinned(originalView.getContext(), mKey);
+        }
+
+        @Override
+        public void onClick(View view) {
+            dismissTaskMenuView();
+            Context context = view.getContext();
+            if (mPinned) {
+                PinnedAppsStore.unpin(context, mKey);
+                return;
+            }
+            int limit = mTarget.getDeviceProfile().getAllAppsProfile().getNumShownAllAppsColumns();
+            if (!PinnedAppsStore.pin(context, mKey, limit)) {
+                Toast.makeText(context, context.getString(R.string.pin_to_drawer_full, limit),
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 }
