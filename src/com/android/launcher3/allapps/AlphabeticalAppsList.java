@@ -39,6 +39,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import com.android.launcher3.Flags;
 import com.android.launcher3.R;
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
+import com.android.launcher3.lineage.trust.db.TrustDatabaseHelper;
 import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.util.LabelComparator;
@@ -114,6 +115,7 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
     private int mNumAppsPerRowAllApps;
     private int mNumAppRowsInAdapter;
     private Predicate<ItemInfo> mItemFilter;
+    private boolean mLockedOnly = false;
 
     public AlphabeticalAppsList(ActivityContext activityContext, @Nullable AllAppsStore appsStore,
             WorkProfileManager workProfileManager, PrivateProfileManager privateProfileManager) {
@@ -143,6 +145,14 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
     /** Set the number of apps per row when device profile changes. */
     public void setNumAppsPerRowAllApps(int numAppsPerRow) {
         mNumAppsPerRowAllApps = numAppsPerRow;
+    }
+
+    public void setLockedOnly(boolean lockedOnly) {
+        if (mLockedOnly == lockedOnly) {
+            return;
+        }
+        mLockedOnly = lockedOnly;
+        onAppsUpdated();
     }
 
     public void updateItemFilter(Predicate<ItemInfo> itemFilter) {
@@ -255,6 +265,11 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
                 privateAppStream = privateAppStream
                         .filter(mPrivateProviderManager.getItemInfoMatcher());
             }
+        }
+        if (mLockedOnly && !hasSearchResults()) {
+            TrustDatabaseHelper trust = TrustDatabaseHelper.getInstance(
+                    mActivityContext.asContext());
+            appSteam = appSteam.filter(info -> trust.isPackageProtected(info.getTargetPackage()));
         }
         appSteam = appSteam.sorted(mAppNameComparator);
         privateAppStream = privateAppStream.sorted(mAppNameComparator);

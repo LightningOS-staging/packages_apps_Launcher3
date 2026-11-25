@@ -124,6 +124,8 @@
     <string name="drawer_search_summary">Search bar on top of the app drawer</string>
 
     <!-- Launcher lock -->
+    <string name="lock_chip_all">All</string>
+    <string name="lock_chip_locked">Locked</string>
     <string name="lock_method_title">Lock method</string>
     <string name="lock_method_none">Off</string>
     <string name="lock_method_biometric">Biometric</string>
