@@ -19,6 +19,7 @@ package com.android.launcher3.appprediction;
 import static android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -38,15 +39,19 @@ import com.android.launcher3.Flags;
 import com.android.launcher3.LauncherPrefs;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.allapps.AllAppsStore;
 import com.android.launcher3.allapps.FloatingHeaderRow;
 import com.android.launcher3.allapps.FloatingHeaderView;
 import com.android.launcher3.anim.AlphaUpdateListener;
 import com.android.launcher3.keyboard.FocusIndicatorHelper;
 import com.android.launcher3.keyboard.FocusIndicatorHelper.SimpleFocusIndicatorHelper;
 import com.android.launcher3.lineage.trust.db.TrustDatabaseHelper;
+import com.android.launcher3.model.data.AppInfo;
 import com.android.launcher3.model.data.ItemInfo;
 import com.android.launcher3.model.data.ItemInfoWithIcon;
 import com.android.launcher3.model.data.WorkspaceItemInfo;
+import com.android.launcher3.pinned.PinnedAppsStore;
+import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.views.ActivityContext;
 
 import java.io.PrintWriter;
@@ -77,6 +82,17 @@ public class PredictionRowView<T extends Context & ActivityContext>
 
     private boolean mPredictionUiUpdatePaused = false;
 
+    private final boolean mPinnedMode;
+
+    private final SharedPreferences.OnSharedPreferenceChangeListener mPinnedListener =
+            (prefs, key) -> {
+                if (LauncherPrefs.DRAWER_PINNED_APPS.getSharedPrefKey().equals(key)) {
+                    refreshPinnedApps();
+                }
+            };
+
+    private final AllAppsStore.OnUpdateListener mAppsUpdateListener = this::refreshPinnedApps;
+
     public PredictionRowView(@NonNull Context context) {
         this(context, null);
     }
@@ -87,6 +103,7 @@ public class PredictionRowView<T extends Context & ActivityContext>
 
         mFocusHelper = new SimpleFocusIndicatorHelper(this);
         mActivityContext = ActivityContext.lookupContext(context);
+        mPinnedMode = PinnedAppsStore.isPinnedMode(context);
         mNumPredictedAppsPerRow =
                 mActivityContext.getDeviceProfile().getAllAppsProfile().getNumShownAllAppsColumns();
         mTopRowExtraHeight = getResources().getDimensionPixelSize(
@@ -108,16 +125,32 @@ public class PredictionRowView<T extends Context & ActivityContext>
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         mActivityContext.addOnDeviceProfileChangeListener(this);
+        if (mPinnedMode) {
+            LauncherPrefs.getPrefs(getContext())
+                    .registerOnSharedPreferenceChangeListener(mPinnedListener);
+            mActivityContext.getActivityComponent().getAppsStore()
+                    .addUpdateListener(mAppsUpdateListener);
+            refreshPinnedApps();
+        }
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mActivityContext.removeOnDeviceProfileChangeListener(this);
+        if (mPinnedMode) {
+            LauncherPrefs.getPrefs(getContext())
+                    .unregisterOnSharedPreferenceChangeListener(mPinnedListener);
+            mActivityContext.getActivityComponent().getAppsStore()
+                    .removeUpdateListener(mAppsUpdateListener);
+        }
     }
 
     public void setup(FloatingHeaderView parent, FloatingHeaderRow[] rows, boolean tabsHidden) {
         mParent = parent;
+        if (mPinnedMode) {
+            refreshPinnedApps();
+        }
     }
 
     private void updateVisibility() {
@@ -189,7 +222,25 @@ public class PredictionRowView<T extends Context & ActivityContext>
      * we can optimize by swapping them in place.
      */
     public void setPredictedApps(List<ItemInfo> items) {
+        if (mPinnedMode) {
+            return;
+        }
         applyPredictedApps(items);
+    }
+
+    private void refreshPinnedApps() {
+        if (mParent == null) {
+            return;
+        }
+        AllAppsStore store = mActivityContext.getActivityComponent().getAppsStore();
+        mPredictedApps.clear();
+        for (ComponentKey key : PinnedAppsStore.getPinned(getContext())) {
+            AppInfo app = store.getApp(key);
+            if (app != null && !isAppHidden(app)) {
+                mPredictedApps.add(new WorkspaceItemInfo(app));
+            }
+        }
+        applyPredictionApps();
     }
 
     private boolean isAppHidden(ItemInfo itemInfo) {
