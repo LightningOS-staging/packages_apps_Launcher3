@@ -124,6 +124,17 @@
     <string name="drawer_search_summary">Search bar on top of the app drawer</string>
 
     <!-- Launcher lock -->
+    <string name="lock_method_title">Lock method</string>
+    <string name="lock_method_none">Off</string>
+    <string name="lock_method_biometric">Biometric</string>
+    <string name="lock_method_password">Password</string>
+    <string name="lock_method_pattern">Pattern</string>
+    <string name="lock_method_turn_off">Turn off lock</string>
+    <string name="lock_ask_again_title">Ask again</string>
+    <string name="lock_ask_every_time">Every time</string>
+    <string name="lock_ask_one_minute">After 1 minute</string>
+    <string name="lock_ask_five_minutes">After 5 minutes</string>
+    <string name="lock_ask_screen_off">After the screen turns off</string>
     <string name="lock_setup_biometric_title">Confirm your fingerprint or face</string>
     <string name="lock_biometric_unavailable">No fingerprint or face is enrolled on this device</string>
     <string name="lock_new_password">Enter a new password</string>

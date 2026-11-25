@@ -10,6 +10,7 @@ import static com.android.launcher3.InvariantDeviceProfile.TYPE_TABLET;
 import static com.android.launcher3.util.Executors.MAIN_EXECUTOR;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -39,6 +40,8 @@ import com.android.launcher3.BuildConfig;
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.LauncherFiles;
 import com.android.launcher3.R;
+import com.android.launcher3.lock.LockPrompt;
+import com.android.launcher3.lock.LockStore;
 import com.android.launcher3.display.DisplayController;
 import com.android.launcher3.display.LauncherDisplayInfo;
 import com.android.launcher3.util.SafeCloseable;
@@ -69,6 +72,8 @@ public class SettingsMisc extends CollapsingToolbarBaseActivity
     public static final String SAVE_HIGHLIGHTED_KEY = "android:preference_highlighted";
 
     public static final String KEY_TRUST_APPS = "pref_trust_apps";
+    public static final String KEY_LOCK_METHOD = "pref_lock_method";
+    public static final String KEY_LOCK_ASK_AGAIN = "pref_lock_ask_again";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -294,19 +299,128 @@ public class SettingsMisc extends CollapsingToolbarBaseActivity
                     return !info.isLargeScreen(info.realBounds);
                 case KEY_TRUST_APPS:
                     preference.setOnPreferenceClickListener(p -> {
-                        Utilities.showLockScreen(getActivity(),
-                                getString(R.string.trust_apps_manager_name), () -> {
+                        Runnable open = () -> {
                             Intent intent = new Intent(getActivity(), TrustAppsActivity.class);
                             startActivity(intent);
-                        });
+                        };
+                        if (new LockStore(getContext()).isConfigured()) {
+                            LockPrompt.authenticate(getActivity(),
+                                    getString(R.string.trust_apps_manager_name), open);
+                        } else {
+                            Utilities.showLockScreen(getActivity(),
+                                    getString(R.string.trust_apps_manager_name), open);
+                        }
                         return true;
                     });
+                    return true;
+                case KEY_LOCK_METHOD:
+                    preference.setOnPreferenceClickListener(p -> {
+                        LockPrompt.authenticate(getActivity(),
+                                getString(R.string.lock_method_title), this::showLockMethods);
+                        return true;
+                    });
+                    preference.setSummary(lockMethodLabel(
+                            new LockStore(getContext()).getMethod()));
+                    return true;
+                case KEY_LOCK_ASK_AGAIN:
+                    preference.setOnPreferenceClickListener(p -> {
+                        showAskAgainChoices();
+                        return true;
+                    });
+                    preference.setEnabled(new LockStore(getContext()).isConfigured());
+                    preference.setSummary(askAgainLabel(
+                            new LockStore(getContext()).getAskAgainMs()));
                     return true;
                 case SUGGESTIONS_KEY:
                     // Show if Device Personalization Services is present.
                     return isDPSEnabled(getContext());
             }
             return true;
+        }
+
+        private void refreshLockPreferences() {
+            LockStore store = new LockStore(getContext());
+            Preference method = findPreference(KEY_LOCK_METHOD);
+            if (method != null) {
+                method.setSummary(lockMethodLabel(store.getMethod()));
+            }
+            Preference askAgain = findPreference(KEY_LOCK_ASK_AGAIN);
+            if (askAgain != null) {
+                askAgain.setEnabled(store.isConfigured());
+                askAgain.setSummary(askAgainLabel(store.getAskAgainMs()));
+            }
+        }
+
+        private String lockMethodLabel(String method) {
+            switch (method) {
+                case LockStore.METHOD_BIOMETRIC:
+                    return getString(R.string.lock_method_biometric);
+                case LockStore.METHOD_PASSWORD:
+                    return getString(R.string.lock_method_password);
+                case LockStore.METHOD_PATTERN:
+                    return getString(R.string.lock_method_pattern);
+                default:
+                    return getString(R.string.lock_method_none);
+            }
+        }
+
+        private String askAgainLabel(long value) {
+            if (value == LockStore.ASK_SCREEN_OFF) {
+                return getString(R.string.lock_ask_screen_off);
+            } else if (value >= 300_000L) {
+                return getString(R.string.lock_ask_five_minutes);
+            } else if (value >= 60_000L) {
+                return getString(R.string.lock_ask_one_minute);
+            }
+            return getString(R.string.lock_ask_every_time);
+        }
+
+        private void showLockMethods() {
+            String[] methods = {LockStore.METHOD_BIOMETRIC, LockStore.METHOD_PASSWORD,
+                    LockStore.METHOD_PATTERN, LockStore.METHOD_NONE};
+            String[] labels = {getString(R.string.lock_method_biometric),
+                    getString(R.string.lock_method_password),
+                    getString(R.string.lock_method_pattern),
+                    getString(R.string.lock_method_turn_off)};
+            LockStore store = new LockStore(getContext());
+            int checked = java.util.Arrays.asList(methods).indexOf(store.getMethod());
+            new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.lock_method_title)
+                    .setSingleChoiceItems(labels, checked, (dialog, which) -> {
+                        dialog.dismiss();
+                        if (LockStore.METHOD_NONE.equals(methods[which])) {
+                            store.clear();
+                            refreshLockPreferences();
+                        } else {
+                            LockPrompt.setup(getActivity(), methods[which],
+                                    this::refreshLockPreferences);
+                        }
+                    })
+                    .show();
+        }
+
+        private void showAskAgainChoices() {
+            long[] values = {LockStore.ASK_EVERY_TIME, 60_000L, 300_000L,
+                    LockStore.ASK_SCREEN_OFF};
+            String[] labels = {getString(R.string.lock_ask_every_time),
+                    getString(R.string.lock_ask_one_minute),
+                    getString(R.string.lock_ask_five_minutes),
+                    getString(R.string.lock_ask_screen_off)};
+            LockStore store = new LockStore(getContext());
+            int checked = 0;
+            for (int i = 0; i < values.length; i++) {
+                if (values[i] == store.getAskAgainMs()) {
+                    checked = i;
+                }
+            }
+            new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.lock_ask_again_title)
+                    .setSingleChoiceItems(labels, checked, (dialog, which) -> {
+                        store.setAskAgainMs(values[which]);
+                        dialog.dismiss();
+                        refreshLockPreferences();
+                    })
+                    .show();
         }
 
         public static boolean isDPSEnabled(Context context) {
@@ -320,6 +434,7 @@ public class SettingsMisc extends CollapsingToolbarBaseActivity
         @Override
         public void onResume() {
             super.onResume();
+            refreshLockPreferences();
 
             if (isAdded() && !mPreferenceHighlighted) {
                 PreferenceHighlighter highlighter = createHighlighter();
