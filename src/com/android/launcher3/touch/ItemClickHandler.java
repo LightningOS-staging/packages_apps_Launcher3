@@ -53,6 +53,8 @@ import com.android.launcher3.apppairs.AppPairIcon;
 import com.android.launcher3.folder.Folder;
 import com.android.launcher3.folder.FolderIcon;
 import com.android.launcher3.lineage.trust.db.TrustDatabaseHelper;
+import com.android.launcher3.lock.LockPrompt;
+import com.android.launcher3.lock.LockStore;
 import com.android.launcher3.logging.InstanceId;
 import com.android.launcher3.logging.InstanceIdSequence;
 import com.android.launcher3.logging.StatsLogManager;
@@ -140,10 +142,20 @@ public class ItemClickHandler {
     private static void onClickFolderIcon(View v) {
         Folder folder = ((FolderIcon) v).getFolder();
         if (!folder.isOpen() && !folder.isDestroyed()) {
-            // Open the requested folder
-            folder.animateOpen();
-            StatsLogManager.newInstance(v.getContext()).logger().withItemInfo(folder.mInfo)
-                    .log(LAUNCHER_FOLDER_OPEN);
+            LockStore store = new LockStore(v.getContext());
+            Runnable open = () -> {
+                if (!folder.isOpen() && !folder.isDestroyed()) {
+                    folder.animateOpen();
+                    StatsLogManager.newInstance(v.getContext()).logger().withItemInfo(folder.mInfo)
+                            .log(LAUNCHER_FOLDER_OPEN);
+                }
+            };
+            if (store.isConfigured() && store.isFolderLocked(folder.mInfo.id)) {
+                LockPrompt.authenticate(v.getContext(),
+                        v.getContext().getString(R.string.folder_locked_title), open);
+            } else {
+                open.run();
+            }
         }
     }
 

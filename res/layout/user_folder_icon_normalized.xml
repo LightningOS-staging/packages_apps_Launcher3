@@ -53,6 +53,17 @@
             android:textColorHighlight="?android:attr/colorControlHighlight"
             android:textColorHint="?attr/folderHintTextColor"/>
 
+        <ImageButton
+            android:id="@+id/folder_lock"
+            android:layout_width="@dimen/folder_arrow_touchbox_length"
+            android:layout_height="@dimen/folder_arrow_touchbox_length"
+            android:layout_gravity="center_vertical"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_folder_unlock"
+            android:tint="?attr/folderTextColor"
+            android:contentDescription="@string/folder_lock_action"
+            android:visibility="gone" />
+
         <com.android.launcher3.pageindicators.PaginationArrow
             android:id="@+id/left_indicator_arrow"
             android:layout_width="@dimen/folder_arrow_touchbox_length"

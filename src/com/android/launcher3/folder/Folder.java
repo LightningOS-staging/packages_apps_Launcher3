@@ -64,6 +64,7 @@ import android.view.WindowInsets;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -100,6 +101,8 @@ import com.android.launcher3.graphics.ShapeDelegate;
 import com.android.launcher3.graphics.ThemeManager;
 import com.android.launcher3.logger.LauncherAtom.FromState;
 import com.android.launcher3.logger.LauncherAtom.ToState;
+import com.android.launcher3.lock.LockPrompt;
+import com.android.launcher3.lock.LockStore;
 import com.android.launcher3.logging.StatsLogManager;
 import com.android.launcher3.logging.StatsLogManager.StatsLogger;
 import com.android.launcher3.model.data.FolderInfo;
@@ -222,6 +225,7 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
     private PaginationArrow mRightArrow;
 
     protected LinearLayout mFooter;
+    private ImageButton mLockButton;
     private int mFooterHeight;
 
     // Cell ranks used for drag and drop
@@ -338,6 +342,8 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         mFooter = findViewById(R.id.folder_footer);
         mFooterHeight = dp.getFolderProfile().getFooterHeightPx();
         mFolderName = findViewById(R.id.folder_name);
+        mLockButton = findViewById(R.id.folder_lock);
+        mLockButton.setOnClickListener(v -> toggleLock());
         mFolderName.setTypeface(Typeface.create("google-sans-flex", Typeface.NORMAL));
         mFolderName.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 dp.getFolderProfile().getLabelTextSizePx());
@@ -589,8 +595,37 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         return mInfo;
     }
 
+    private void toggleLock() {
+        LockStore store = new LockStore(getContext());
+        if (!store.isFolderLocked(mInfo.id)) {
+            store.setFolderLocked(mInfo.id, true);
+            updateLockButton();
+            return;
+        }
+        LockPrompt.authenticate(getContext(), getContext().getString(R.string.folder_locked_title),
+                () -> {
+                    store.setFolderLocked(mInfo.id, false);
+                    updateLockButton();
+                });
+    }
+
+    private void updateLockButton() {
+        LockStore store = new LockStore(getContext());
+        if (!store.isConfigured()) {
+            mLockButton.setVisibility(GONE);
+            return;
+        }
+        boolean locked = store.isFolderLocked(mInfo.id);
+        mLockButton.setVisibility(VISIBLE);
+        mLockButton.setImageResource(locked ? R.drawable.ic_folder_lock
+                : R.drawable.ic_folder_unlock);
+        mLockButton.setContentDescription(getContext().getString(locked
+                ? R.string.folder_unlock_action : R.string.folder_lock_action));
+    }
+
     void bind(FolderInfo info) {
         mInfo = info;
+        updateLockButton();
         mFromTitle = info.title;
         mFromLabelState = info.getFromLabelState();
         updateItemLocationsInDatabaseBatch(true);
