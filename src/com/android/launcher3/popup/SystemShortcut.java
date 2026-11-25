@@ -797,7 +797,7 @@ public abstract class SystemShortcut<T extends ActivityContext> extends ItemInfo
                 if (!PinnedAppsStore.isPinnedMode(originalView.getContext())
                         || itemInfo.getTargetComponent() == null
                         || !(itemInfo.isInAllApps()
-                        || itemInfo.container == Favorites.CONTAINER_ALL_APPS_PREDICTION)) {
+                        || itemInfo.container == CONTAINER_ALL_APPS_PREDICTION)) {
                     return null;
                 }
                 return new PinToDrawer<>(activity, itemInfo, originalView);

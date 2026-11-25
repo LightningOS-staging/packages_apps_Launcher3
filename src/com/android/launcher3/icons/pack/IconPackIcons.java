@@ -17,8 +17,6 @@
 
 package com.android.launcher3.icons.pack;
 
-import static com.android.launcher3.icons.BaseIconFactory.CONFIG_HINT_NO_WRAP;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ComponentInfo;
@@ -31,6 +29,8 @@ import com.android.launcher3.util.ComponentKey;
 
 /** Loads app icons from the icon pack selected for them. */
 public final class IconPackIcons {
+
+    private static final int CONFIG_HINT_NO_WRAP = 0x1000000;
 
     private IconPackIcons() { }
 
