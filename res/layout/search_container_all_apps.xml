@@ -33,6 +33,7 @@
     android:paddingEnd="12dp"
     android:drawablePadding="8dp"
     android:drawableStart="@drawable/ic_allapps_search"
+    android:drawableEnd="@drawable/ic_more_vert_dots"
     android:saveEnabled="false"
     android:scrollHorizontally="true"
     android:singleLine="true"

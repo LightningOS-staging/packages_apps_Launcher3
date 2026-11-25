@@ -25,17 +25,24 @@ import static com.android.launcher3.icons.IconNormalizer.ICON_VISIBLE_AREA_FACTO
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.text.Selection;
 import android.text.SpannableStringBuilder;
 import android.text.method.TextKeyListener;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.widget.PopupMenu;
 
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.ExtendedEditText;
 import com.android.launcher3.Insettable;
+import com.android.launcher3.LauncherAppState;
+import com.android.launcher3.LauncherPrefs;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.allapps.ActivityAllAppsContainerView;
@@ -43,6 +50,7 @@ import com.android.launcher3.allapps.AllAppsStore;
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem;
 import com.android.launcher3.allapps.PrivateProfileManager;
 import com.android.launcher3.allapps.SearchUiManager;
+import com.android.launcher3.pinned.PinnedAppsStore;
 import com.android.launcher3.search.SearchCallback;
 import com.android.launcher3.util.ApiWrapper;
 import com.android.launcher3.views.ActivityContext;
@@ -132,6 +140,75 @@ public class AppsSearchContainerLayout extends ExtendedEditText
         setTranslationX(shift);
 
         offsetTopAndBottom(mContentOverlap);
+    }
+
+    private static final int MENU_GROUP_TOP_ROW = 1;
+    private static final int MENU_SUGGESTIONS = 1;
+    private static final int MENU_PINNED = 2;
+    private static final int MENU_BLUR = 3;
+
+    private boolean mMenuTouch = false;
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int action = event.getActionMasked();
+        if (action == MotionEvent.ACTION_DOWN) {
+            mMenuTouch = isMenuHit(event.getX());
+        }
+        if (mMenuTouch) {
+            if (action == MotionEvent.ACTION_UP) {
+                mMenuTouch = false;
+                showMenu();
+            } else if (action == MotionEvent.ACTION_CANCEL) {
+                mMenuTouch = false;
+            }
+            return true;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    private boolean isMenuHit(float x) {
+        Drawable end = getCompoundDrawablesRelative()[2];
+        if (end == null || !isSearchQueryEmpty()) {
+            return false;
+        }
+        int reach = end.getIntrinsicWidth() + getPaddingEnd() + getPaddingStart();
+        return getLayoutDirection() == LAYOUT_DIRECTION_RTL ? x <= reach : x >= getWidth() - reach;
+    }
+
+    private void showMenu() {
+        PopupMenu popup = new PopupMenu(getContext(), this);
+        Menu menu = popup.getMenu();
+        boolean pinned = PinnedAppsStore.isPinnedMode(getContext());
+        menu.add(MENU_GROUP_TOP_ROW, MENU_SUGGESTIONS, 0, R.string.drawer_top_row_suggestions)
+                .setCheckable(true).setChecked(!pinned);
+        menu.add(MENU_GROUP_TOP_ROW, MENU_PINNED, 1, R.string.drawer_top_row_pinned)
+                .setCheckable(true).setChecked(pinned);
+        menu.setGroupCheckable(MENU_GROUP_TOP_ROW, true, true);
+        menu.add(0, MENU_BLUR, 2, R.string.drawer_blur_title)
+                .setCheckable(true).setChecked(LauncherPrefs.DRAWER_BLUR.get(getContext()));
+        popup.setOnMenuItemClickListener(this::onMenuItemClicked);
+        popup.show();
+    }
+
+    private boolean onMenuItemClicked(MenuItem item) {
+        LauncherPrefs prefs = LauncherPrefs.get(getContext());
+        switch (item.getItemId()) {
+            case MENU_SUGGESTIONS:
+            case MENU_PINNED:
+                String mode = item.getItemId() == MENU_PINNED
+                        ? PinnedAppsStore.MODE_PINNED : PinnedAppsStore.MODE_SUGGESTIONS;
+                if (!mode.equals(prefs.get(LauncherPrefs.DRAWER_TOP_ROW))) {
+                    prefs.put(LauncherPrefs.DRAWER_TOP_ROW, mode);
+                    LauncherAppState.INSTANCE.executeIfCreated(app -> app.setNeedsRestart());
+                }
+                return true;
+            case MENU_BLUR:
+                prefs.put(LauncherPrefs.DRAWER_BLUR, !LauncherPrefs.DRAWER_BLUR.get(getContext()));
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override
