@@ -25,6 +25,7 @@ import android.graphics.RenderNode
 import android.graphics.Shader
 import android.view.View
 import com.android.internal.graphics.drawable.BackgroundBlurDrawable
+import com.android.launcher3.LauncherPrefs
 import com.android.launcher3.R
 import com.android.launcher3.dagger.ActivityContextSingleton
 import com.android.launcher3.folder.Folder
@@ -185,6 +186,7 @@ constructor(
     }
 
     override fun isBlurEnabled(): Boolean {
-        return blurState.value
+        return blurState.value &&
+            LauncherPrefs.DRAWER_BLUR.get(activityContext.asContext())
     }
 }

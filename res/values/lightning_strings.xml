@@ -123,6 +123,10 @@
     <string name="drawer_search_title">App search bar</string>
     <string name="drawer_search_summary">Search bar on top of the app drawer</string>
 
+    <!-- Drawer blur -->
+    <string name="drawer_blur_title">Background blur</string>
+    <string name="drawer_blur_summary">Blur the wallpaper behind the drawer, folders and menus</string>
+
     <!-- Wallpaper scrolling -->
     <string name="allow_wallpaper_scrolling">Wallpaper scrolling</string>
     <string name="allow_wallpaper_scrolling_summary">Wallpaper scrolling effect for multiple screens</string>

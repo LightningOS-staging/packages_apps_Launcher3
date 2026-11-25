@@ -284,6 +284,7 @@ constructor(@ApplicationContext private val encryptedContext: Context) {
         @JvmField val DARK_STATUS_BAR = backedUpItem("pref_dark_status_bar", false)
         @JvmField val DRAWER_SCROLLBAR = backedUpItem("pref_drawer_scrollbar", true)
         @JvmField val DRAWER_SEARCH = backedUpItem("pref_drawer_search", true)
+        @JvmField val DRAWER_BLUR = backedUpItem("pref_drawer_blur", true)
         @JvmField val FONT_SIZE = backedUpItem("pref_custom_font_size", 100)
         @JvmField val HOTSEAT_OPACITY = backedUpItem("pref_hotseat_opacity", 40)
         @JvmField val ICON_SIZE = backedUpItem("pref_custom_icon_size", 100)

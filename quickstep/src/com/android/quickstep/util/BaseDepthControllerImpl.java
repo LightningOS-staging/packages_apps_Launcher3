@@ -208,7 +208,8 @@ public class BaseDepthControllerImpl<
 
     protected boolean shouldBlur() {
         boolean hasOpaqueBg = mContainer.getScrimView().isFullyOpaque();
-        return mCrossWindowBlursEnabled && !hasOpaqueBg && !mPauseBlurs;
+        return mCrossWindowBlursEnabled && !hasOpaqueBg && !mPauseBlurs
+                && LauncherPrefs.DRAWER_BLUR.get(mContainer);
     }
 
     protected void onInvalidSurface() { }
