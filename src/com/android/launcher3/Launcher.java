@@ -174,6 +174,8 @@ import com.android.launcher3.dragndrop.LauncherDragController;
 import com.android.launcher3.folder.Folder;
 import com.android.launcher3.folder.FolderIcon;
 import com.android.launcher3.keyboard.ViewGroupFocusHelper;
+import com.android.launcher3.lock.LockPrompt;
+import com.android.launcher3.lock.LockStore;
 import com.android.launcher3.logger.LauncherAtom;
 import com.android.launcher3.logger.LauncherAtom.ContainerInfo;
 import com.android.launcher3.logger.LauncherAtom.WorkspaceContainer;
@@ -2018,9 +2020,12 @@ public class Launcher extends StatefulActivity<LauncherState>
     }
 
     public void startActivitySafelyAuth(View v, Intent intent, ItemInfo item) {
-        Utilities.showLockScreen(this, getString(R.string.trust_apps_manager_name), () -> {
-            startActivitySafely(v, intent, item);
-        });
+        Runnable launch = () -> startActivitySafely(v, intent, item);
+        if (new LockStore(this).isConfigured()) {
+            LockPrompt.authenticate(this, getString(R.string.trust_apps_manager_name), launch);
+        } else {
+            Utilities.showLockScreen(this, getString(R.string.trust_apps_manager_name), launch);
+        }
     }
 
     boolean isHotseatLayout(View layout) {

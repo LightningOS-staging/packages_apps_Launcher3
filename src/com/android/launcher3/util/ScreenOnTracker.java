@@ -31,6 +31,7 @@ import androidx.annotation.VisibleForTesting;
 import com.android.launcher3.dagger.ApplicationContext;
 import com.android.launcher3.dagger.LauncherAppSingleton;
 import com.android.launcher3.dagger.LauncherBaseAppComponent;
+import com.android.launcher3.lock.LockStore;
 import com.android.launcher3.concurrent.annotations.LightweightBackground;
 import static com.android.launcher3.concurrent.annotations.LightweightBackgroundPriority.UI;
 import com.android.launcher3.concurrent.annotations.Ui;
@@ -89,6 +90,7 @@ public class ScreenOnTracker {
             });
         } else if (ACTION_SCREEN_OFF.equals(action)) {
             mIsScreenOn = false;
+            LockStore.lockNow();
             THREAD_POOL_EXECUTOR.execute(() -> {
                 dispatchScreenOnChanged();
             });
