@@ -123,6 +123,20 @@
     <string name="drawer_search_title">App search bar</string>
     <string name="drawer_search_summary">Search bar on top of the app drawer</string>
 
+    <!-- Launcher lock -->
+    <string name="lock_setup_biometric_title">Confirm your fingerprint or face</string>
+    <string name="lock_biometric_unavailable">No fingerprint or face is enrolled on this device</string>
+    <string name="lock_new_password">Enter a new password</string>
+    <string name="lock_confirm_password">Confirm password</string>
+    <string name="lock_new_pattern">Draw a new pattern</string>
+    <string name="lock_confirm_pattern">Confirm pattern</string>
+    <string name="lock_mismatch">They did not match, try again</string>
+    <string name="lock_wrong_password">Wrong password</string>
+    <string name="lock_wrong_pattern">Wrong pattern</string>
+    <string name="lock_password_short">Use at least %1$d digits</string>
+    <string name="lock_pattern_short">Connect at least %1$d dots</string>
+    <string name="lock_try_again">Try again in %1$d seconds</string>
+
     <!-- Drawer top row -->
     <string name="drawer_top_row_title">Top row shows</string>
     <string name="drawer_top_row_suggestions">App suggestions</string>
