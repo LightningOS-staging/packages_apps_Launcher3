@@ -123,7 +123,7 @@
             android:key="pref_show_hotseat_bg"
             android:title="@string/hotseat_bg_title"
             android:summary="@string/hotseat_bg_summary"
-            android:defaultValue="false"
+            android:defaultValue="true"
             launcher:iconSpaceReserved="false" />
 
         <com.android.launcher3.settings.preferences.CustomSeekBarPreference
@@ -134,7 +134,7 @@
             settings:min="0"
             settings:units="%"
             android:dependency="pref_show_hotseat_bg"
-            android:defaultValue="40" />
+            android:defaultValue="82" />
 
     </PreferenceCategory>
 
