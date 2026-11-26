@@ -212,4 +212,5 @@
     <!-- Dark Status Bar -->
     <string name="perf_dark_status_bar_title">Dark status bar</string>
     <string name="perf_dark_status_bar_summary">Always use dark status bar on home screen</string>
+    <string name="nine_sided_cookie_shape_title">9-sided cookie</string>
 </resources>
