@@ -217,4 +217,5 @@
     <string name="sunny_shape_title">Sunny</string>
     <string name="flower_shape_title">Flower</string>
     <string name="clover_shape_title">Clover</string>
+    <string name="icon_shape_title">Icon shape</string>
 </resources>
