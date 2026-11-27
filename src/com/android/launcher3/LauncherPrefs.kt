@@ -288,7 +288,7 @@ constructor(@ApplicationContext private val encryptedContext: Context) {
         @JvmField val DRAWER_TOP_ROW = backedUpItem("pref_drawer_top_row", "suggestions")
         @JvmField val DRAWER_PINNED_APPS = backedUpItem("pref_drawer_pinned_apps", "")
         @JvmField val FONT_SIZE = backedUpItem("pref_custom_font_size", 100)
-        @JvmField val HOTSEAT_OPACITY = backedUpItem("pref_hotseat_opacity", 40)
+        @JvmField val HOTSEAT_OPACITY = backedUpItem("pref_hotseat_opacity", 82)
         @JvmField val ICON_SIZE = backedUpItem("pref_custom_icon_size", 100)
         @JvmField val RECENTS_CLEAR_ALL = backedUpItem("pref_recents_clear_all", true)
         @JvmField val RECENTS_LENS = backedUpItem("pref_recents_lens", false)
@@ -301,7 +301,7 @@ constructor(@ApplicationContext private val encryptedContext: Context) {
         @JvmField
         val PROMISE_ICON_IDS = nonRestorableItem(InstallSessionHelper.PROMISE_ICON_IDS, "")
         @JvmField val WORK_EDU_STEP = backedUpItem("showed_work_profile_edu", 0)
-        @JvmField val SHOW_HOTSEAT_BG = backedUpItem("pref_show_hotseat_bg", false)
+        @JvmField val SHOW_HOTSEAT_BG = backedUpItem("pref_show_hotseat_bg", true)
         @JvmField val SHOW_STATUS_BAR = backedUpItem("pref_show_statusbar", true)
         @JvmField val SHOW_TOP_SHADOW = backedUpItem("pref_show_top_shadow", true)
         @JvmField val SINGLE_PAGE_CENTER = backedUpItem("pref_single_page_center", false)
