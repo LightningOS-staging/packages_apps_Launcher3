@@ -272,7 +272,7 @@ public class PredictionRowView<T extends Context & ActivityContext>
     }
 
     private void applyPredictionApps() {
-        if (mPredictionUiUpdatePaused) {
+        if (mPredictionUiUpdatePaused || mActivityContext.getAppsView() == null) {
             return;
         }
         if (getChildCount() != mNumPredictedAppsPerRow) {
