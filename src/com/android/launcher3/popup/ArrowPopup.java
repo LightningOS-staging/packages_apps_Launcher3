@@ -158,6 +158,7 @@ public abstract class ArrowPopup<T extends ActivityContext> extends AbstractFloa
         mArrowPointRadius = resources.getDimensionPixelSize(R.dimen.popup_arrow_corner_radius);
 
         int smallerRadius = resources.getDimensionPixelSize(R.dimen.popup_smaller_radius);
+        int rowRadius = resources.getDimensionPixelSize(R.dimen.popup_row_outer_radius);
         mRoundedTop = new GradientDrawable();
         int popupPrimaryColor = Themes.getAttrColor(context, R.attr.popupColorPrimary);
         if (mBlurBackgroundHelper != null && mBlurBackgroundHelper.isBlurEnabled()) {
@@ -165,13 +166,13 @@ public abstract class ArrowPopup<T extends ActivityContext> extends AbstractFloa
             mArrowColor = Color.argb(120, Color.red(mArrowColor), Color.green(mArrowColor), Color.blue(mArrowColor));
         }
         mRoundedTop.setColor(popupPrimaryColor);
-        mRoundedTop.setCornerRadii(new float[]{mOutlineRadius, mOutlineRadius, mOutlineRadius,
-                mOutlineRadius, smallerRadius, smallerRadius, smallerRadius, smallerRadius});
+        mRoundedTop.setCornerRadii(new float[]{rowRadius, rowRadius, rowRadius,
+                rowRadius, smallerRadius, smallerRadius, smallerRadius, smallerRadius});
 
         mRoundedBottom = new GradientDrawable();
         mRoundedBottom.setColor(popupPrimaryColor);
         mRoundedBottom.setCornerRadii(new float[]{smallerRadius, smallerRadius, smallerRadius,
-                smallerRadius, mOutlineRadius, mOutlineRadius, mOutlineRadius, mOutlineRadius});
+                smallerRadius, rowRadius, rowRadius, rowRadius, rowRadius});
 
         mIterateChildrenTag = getContext().getString(R.string.popup_container_iterate_children);
 

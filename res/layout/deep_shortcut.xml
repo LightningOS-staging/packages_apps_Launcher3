@@ -34,7 +34,7 @@
         android:drawablePadding="@dimen/deep_shortcut_drawable_padding"
         android:singleLine="true"
         android:ellipsize="end"
-        android:textSize="14sp"
+        android:textSize="@dimen/popup_text_size"
         android:textColor="?attr/popupTextColor"
         launcher:layoutHorizontal="true"
         launcher:iconDisplay="shortcut_popup"

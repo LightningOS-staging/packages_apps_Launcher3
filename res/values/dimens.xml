@@ -328,7 +328,7 @@
     <dimen name="deep_shortcuts_elevation">2dp</dimen>
     <dimen name="bg_popup_padding">2dp</dimen>
     <dimen name="bg_popup_item_width">216dp</dimen>
-    <dimen name="bg_popup_item_height">52dp</dimen>
+    <dimen name="bg_popup_item_height">56dp</dimen>
     <dimen name="bg_popup_item_vertical_padding">12dp</dimen>
     <dimen name="pre_drag_view_scale">6dp</dimen>
     <dimen name="deep_shortcut_add_button_size">48dp</dimen>
@@ -338,8 +338,11 @@
     <!-- an icon with shortcuts must be dragged this far before the container is removed. -->
     <dimen name="deep_shortcuts_start_drag_threshold">16dp</dimen>
     <!-- Possibly related to b/235886078, icon needs to be scaled up to match expected visual size of 32 dp -->
-    <dimen name="deep_shortcut_icon_size">35dp</dimen>
+    <dimen name="deep_shortcut_icon_size">40dp</dimen>
     <dimen name="popup_blur_radius">20dp</dimen>
+    <dimen name="popup_container_radius">28dp</dimen>
+    <dimen name="popup_container_padding">8dp</dimen>
+    <dimen name="popup_row_outer_radius">20dp</dimen>
     <dimen name="popup_margin">2dp</dimen>
     <dimen name="popup_single_item_radius">100dp</dimen>
     <dimen name="popup_smaller_radius">4dp</dimen>
@@ -351,14 +354,15 @@
     <dimen name="popup_arrow_height">10dp</dimen>
     <dimen name="popup_arrow_vertical_offset">-1dp</dimen>
     <!-- popup_padding_start + deep_shortcut_icon_size / 2 -->
-    <dimen name="popup_arrow_horizontal_center_offset">26dp</dimen>
+    <dimen name="popup_arrow_horizontal_center_offset">30dp</dimen>
     <dimen name="popup_arrow_corner_radius">2dp</dimen>
     <!-- popup_padding_start + deep_shortcut_icon_size + 12dp -->
-    <dimen name="deep_shortcuts_text_padding_start">54dp</dimen>
+    <dimen name="deep_shortcuts_text_padding_start">62dp</dimen>
+    <dimen name="popup_text_size">15sp</dimen>
     <dimen name="system_shortcut_icon_size">20dp</dimen>
     <!-- popup_arrow_horizontal_center_offset - system_shortcut_icon_size / 2 -->
     <dimen name="system_shortcut_margin_start">16dp</dimen>
-    <dimen name="system_shortcut_header_height">52dp</dimen>
+    <dimen name="system_shortcut_header_height">56dp</dimen>
     <dimen name="system_shortcut_header_icon_touch_size">48dp</dimen>
     <!-- (system_shortcut_header_icon_touch_size - system_shortcut_icon_size) / 2 -->
     <dimen name="system_shortcut_header_icon_padding">14dp</dimen>
