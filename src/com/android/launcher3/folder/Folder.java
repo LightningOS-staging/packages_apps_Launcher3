@@ -37,8 +37,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.appwidget.AppWidgetHostView;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Insets;
 import android.graphics.Rect;
@@ -226,6 +228,8 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
 
     protected LinearLayout mFooter;
     private ImageButton mLockButton;
+    private ImageButton mColorButton;
+    private final ColorStateList mDefaultBackgroundColor;
     private int mFooterHeight;
 
     // Cell ranks used for drag and drop
@@ -303,6 +307,7 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         mBackground = (GradientDrawable) Objects.requireNonNull(
                 ResourcesCompat.getDrawable(getResources(),
                         R.drawable.round_rect_folder, getContext().getTheme()));
+        mDefaultBackgroundColor = mBackground.getColor();
         mBackground.setCallback(this);
         mBoxSelectionHelper = enableWorkspaceSelection()
                 ? new BoxSelectionHelper(mActivityContext, this)
@@ -342,6 +347,8 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         mFooter = findViewById(R.id.folder_footer);
         mFooterHeight = dp.getFolderProfile().getFooterHeightPx();
         mFolderName = findViewById(R.id.folder_name);
+        mColorButton = findViewById(R.id.folder_color);
+        mColorButton.setOnClickListener(v -> showColorPicker());
         mLockButton = findViewById(R.id.folder_lock);
         mLockButton.setOnClickListener(v -> toggleLock());
         mFolderName.setTypeface(Typeface.create("google-sans-flex", Typeface.NORMAL));
@@ -595,6 +602,51 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
         return mInfo;
     }
 
+    private static final int[] FOLDER_COLORS = {
+            0,
+            R.color.materialColorPrimaryContainer,
+            R.color.materialColorTertiaryContainer,
+            R.color.materialColorSecondaryContainer,
+            R.color.materialColorSurfaceContainerHighest,
+    };
+
+    private static final int[] FOLDER_COLOR_NAMES = {
+            R.string.folder_color_default,
+            R.string.folder_color_lavender,
+            R.string.folder_color_rose,
+            R.string.folder_color_orchid,
+            R.string.folder_color_stone,
+    };
+
+    private void applyFolderColor() {
+        if (mInfo == null) {
+            return;
+        }
+        int index = new FolderColorStore(getContext()).get(mInfo.id);
+        if (index == FolderColorStore.DEFAULT) {
+            mBackground.setColor(mDefaultBackgroundColor);
+        } else {
+            mBackground.setColor(getContext().getColor(FOLDER_COLORS[index]));
+        }
+        invalidate();
+    }
+
+    private void showColorPicker() {
+        FolderColorStore store = new FolderColorStore(getContext());
+        String[] names = new String[FOLDER_COLOR_NAMES.length];
+        for (int i = 0; i < names.length; i++) {
+            names[i] = getContext().getString(FOLDER_COLOR_NAMES[i]);
+        }
+        new AlertDialog.Builder(getContext())
+                .setTitle(R.string.folder_color_action)
+                .setSingleChoiceItems(names, store.get(mInfo.id), (dialog, which) -> {
+                    store.set(mInfo.id, which);
+                    applyFolderColor();
+                    dialog.dismiss();
+                })
+                .show();
+    }
+
     private void toggleLock() {
         LockStore store = new LockStore(getContext());
         if (!store.isFolderLocked(mInfo.id)) {
@@ -625,6 +677,7 @@ public class Folder extends AbstractFloatingView implements ClipPathView, DragSo
 
     void bind(FolderInfo info) {
         mInfo = info;
+        applyFolderColor();
         updateLockButton();
         mFromTitle = info.title;
         mFromLabelState = info.getFromLabelState();
