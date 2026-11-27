@@ -147,7 +147,8 @@ constructor(
     private fun parseIconState(oldState: IconState?): IconState {
         val shapeModel =
             prefs.get(PREF_ICON_SHAPE).let { shapeOverride ->
-                ShapesProvider.iconShapes.firstOrNull { it.key == shapeOverride }
+                val key = shapeOverride.ifEmpty { ShapesProvider.DEFAULT_KEY }
+                ShapesProvider.iconShapes.firstOrNull { it.key == key }
             }
         val iconMask =
             when {
