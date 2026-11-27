@@ -18,7 +18,7 @@
     <!-- For screens without rounded corners -->
     <dimen name="task_corner_radius_small">16dp</dimen>
     <!-- For Launchers that want to override the default dialog corner radius -->
-    <dimen name="task_corner_radius_override">-1dp</dimen>
+    <dimen name="task_corner_radius_override">28dp</dimen>
 
     <!--  Task Menu View  -->
     <dimen name="task_menu_corner_radius">26dp</dimen>
@@ -143,7 +143,7 @@
     <dimen name="default_task_dismiss_drag_velocity_grid_focus_task">5dp</dimen>
 
     <dimen name="recents_clear_all_deadzone_vertical_margin">70dp</dimen>
-    <dimen name="recents_clear_all_outline_radius">24dp</dimen>
+    <dimen name="recents_clear_all_outline_radius">28dp</dimen>
     <dimen name="recents_clear_all_outline_padding">2dp</dimen>
 
     <!-- Recents add desktop button -->
