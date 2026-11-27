@@ -54,6 +54,16 @@
             android:textColorHint="?attr/folderHintTextColor"/>
 
         <ImageButton
+            android:id="@+id/folder_color"
+            android:layout_width="@dimen/folder_arrow_touchbox_length"
+            android:layout_height="@dimen/folder_arrow_touchbox_length"
+            android:layout_gravity="center_vertical"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_folder_palette"
+            android:tint="?attr/folderTextColor"
+            android:contentDescription="@string/folder_color_action" />
+
+        <ImageButton
             android:id="@+id/folder_lock"
             android:layout_width="@dimen/folder_arrow_touchbox_length"
             android:layout_height="@dimen/folder_arrow_touchbox_length"
